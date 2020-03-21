@@ -6,22 +6,22 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:26:34 by archid-           #+#    #+#             //
-//   Updated: 2020/03/20 21:44:03 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/21 14:46:19 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 #include "Graph.class.hpp"
 
-int main(int argc, char *argv[])
+int main(void)
 {
     Graph g;
 
-    g.addEdge("a", "b");
-    g.addEdge("a", "c");
-    g.addEdge("c", "d");
-    g.addEdge("b", "c");
+    g.addEdge("a", "b", 4);
+    g.addEdge("a", "c", 2);
+    g.addEdge("c", "d", 1);
+    g.addEdge("b", "c", 1);
 
-    auto l = g.BFS("a", "d");
+    auto l = g.Dijkstra("a", "d");
 
     cout << "PATH: ";
 
