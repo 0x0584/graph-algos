@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:49:43 by archid-           #+#    #+#             //
-//   Updated: 2020/03/21 14:52:31 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/21 15:29:53 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -60,8 +60,9 @@ list<string> Graph::BFS(const string &s, const string &t) {
 	map<string, string> parent;
 	queue<string> q;
 
+    if (g.find(s) == g.end())
+        return {};
 	q.push(s);
-	parent[s] = "";
 	while (!q.empty())
 	{
 		if (q.front() == t) break;
@@ -82,6 +83,8 @@ list<string> Graph::Dijkstra(const string& s, const string &t) {
     map<string, string> parent;
     priority_queue<pair<string, double>> pq;
 
+    if (g.find(s) == g.end())
+        return {};
     dist[s] = 0.0;
     pq.push({s, 0.0});
     while (!pq.empty()) {

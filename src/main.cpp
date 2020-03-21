@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:26:34 by archid-           #+#    #+#             //
-//   Updated: 2020/03/21 14:46:19 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/21 15:27:16 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -21,7 +21,7 @@ int main(void)
     g.addEdge("c", "d", 1);
     g.addEdge("b", "c", 1);
 
-    auto l = g.Dijkstra("a", "d");
+    auto l = g.Dijkstra("k", "d");
 
     cout << "PATH: ";
 
