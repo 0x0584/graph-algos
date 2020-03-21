@@ -1,0 +1,49 @@
+\documentclass[12pt]{article}
+
+\usepackage[margin=0.90in]{geometry}
+
+\title{Solution of the Graph Algrithms Assignment}
+\author{Anas Rchid}
+
+\begin{document}
+\maketitle
+
+\section*{Abstract}
+
+This is a solution to a graph algorithms assignment, it has three problems with two objectives. The problems are common in graph theory in general, being \textit{strongly connected components}, \textit{path finding} and \textit{vertices ranking}. Solving those problems by a mere implementation is not enough, thus the existance of this paper. It aims to explain some theoretical details about the implementations ad the reasons behind some decisions.
+
+\section{Graphs and Graph Algorithms}
+
+A graph $G(V,E)$ is a pair of sets $V$ and $E$ being the set of vertices and the set edges respectively. Each edge has links two vertices such that one is a source and the other is a destination.
+
+There are many graph algorithms, and depending on the type of the graph, some might be applicatble, others are not.  Generally, graphs have two distinct properties, namely \textit{edge direction} and \textit{edge weight}. Thus we have four possibilies:
+
+\begin{itemize}
+\item being undirected and either unweighted or weighted
+\item being directed and either unweighted or weighted
+\end{itemize}
+
+\section{Path Finding}
+
+A path is a list of vertices that are connect successively via edges, and lead from a source vertex \textit{s} to a destination vertex \textit{t}. More specifically, a \textit{shortest path} is a path which has the \textit{minimal cost}, there could be multiple shortest paths in the same graph, but by definition all of them must have the same cost. That cost could be either in terms of \textit{number of edges} for an unweighted graph, or the \textit{sum of weightes} for a weighted graph.
+
+\subsection{Breath First Search}
+
+Along with Depth First Search, Breath First Search is a fundamental graph traversal algorithm. Both resemble different approaches of how to traverse a given graph. BFS, works only on \textit{unweighted} graphs, and this is actually not a bad thing, matter of fact, BFS is a sub-routine in other more sophisticated algorithms.
+
+BFS travese the graph is a \textit{layered} fashion, meaning that each time we move through the whole graph level by level, starting at a given vertex, and making our way thourgh, until we visit all other reachable vertices.
+
+\paragraph{Algorithm details} Given a graph $G(V,E)$, a vertex $s \in G$ and a queue\footnote{Standard implementation, with there operation isempty, enqueue and dequeue} $Q$. We start by enqueuing the $s$ and mark it as visited\footnote{This could be done either by having an explicite field in the definition of vertices or by maintaining an external array}, so that we can ignore it later if we reached it from another path. Then while $Q$ is not empty, we enqueue all destination nodes of $s$, after marking them too as visited. Repeat until we traverse the whole graph.
+
+\paragraph{Time Complexity} First of all, we shall traverse all the vertices, $O(|V|)$, and we follow all the edges $O(|E|)$\footnote{Graphs can be sparse or dense, thus $O(|E|)$ may vary between $O(1)$ and $O(|V|^2)$}. Thus the total time complexity of the Breath First Search is $O(|V|+|E|)$. However, since we ignore vertices that are already visited, the overall worst case time complexity tend to be $O(|V|)$.
+
+\paragraph{Space Complexity} The queue used to track which vertices to visit next consume a space complexity of $O(|V|)$ at the worst case, since we might store all vertices in the queue at once.
+
+\subsection{Dijkstra's Algorithm}
+
+\section{Strongly Connected Components}
+\subsection{Tarkan's Algorithm}
+
+\section{Ranking}
+
+\end{document}

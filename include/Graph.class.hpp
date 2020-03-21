@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:48:27 by archid-           #+#    #+#             //
-//   Updated: 2020/03/21 20:50:09 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/22 00:21:47 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -33,10 +33,6 @@ class Graph
 		vector<pair<double, Vertex *>> adj;
 		string self;
 	};
-    struct link {
-        int id = 0;
-        int low = 0;
-    };
 	map<string, Vertex *> g;
     void sccDFS(Vertex *e, vector<list<string>>& scc, vector<string>& vec,
                 int& id, map<string, pair<int, int>>& links);
@@ -53,8 +49,10 @@ public:
 	// Breadth First Search is an elemnetary Graph algorithm that's perfect
 	// for finding the shortest path in an "unweighted graph".
 	list<string> BFS(const string& s, const string& t);
+
 	// Dijkstra Shortest Path
 	list<string> Dijkstra(const string& s, const string& t);
+
 	// Trajans Strong Connected Components
 	vector<list<string>> SCC();
 };
