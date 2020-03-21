@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:26:34 by archid-           #+#    #+#             //
-//   Updated: 2020/03/21 15:27:16 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/21 20:08:42 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -14,20 +14,30 @@
 
 int main(void)
 {
-    Graph g;
+	Graph g;
 
-    g.addEdge("a", "b", 4);
-    g.addEdge("a", "c", 2);
-    g.addEdge("c", "d", 1);
-    g.addEdge("b", "c", 1);
+	g.addEdge("a", "b", 1, true);
+	g.addEdge("a", "e", 1, true);
+	g.addEdge("b", "f", 1, true);
+	g.addEdge("c", "b", 1, true);
+	g.addEdge("c", "g", 1, true);
+	g.addEdge("c", "d", 1, true);
+	g.addEdge("d", "g", 1, true);
+	g.addEdge("e", "a", 1, true);
+	g.addEdge("e", "f", 1, true);
+	g.addEdge("f", "c", 1, true);
+	g.addEdge("f", "g", 1, true);
+	g.addEdge("g", "h", 1, true);
+	g.addEdge("h", "d", 1, true);
 
-    auto l = g.Dijkstra("k", "d");
+	auto l = g.SCC();
 
-    cout << "PATH: ";
+	cout << "Number of Connected Components: " << l.size() << endl;
 
-    for (auto itr = l.begin(); itr != l.end(); itr++) {
-        cout << *itr << " ";
+    for (auto iter = l.begin(); iter != l.end(); iter++) {
+        for (auto walk = iter->begin(); walk != iter->end(); walk++)
+            cout << *walk << " ";
+        cout << endl;
     }
-    cout << endl;
-    return 0;
+	return 0;
 }
