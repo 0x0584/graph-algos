@@ -6,7 +6,7 @@
 #    By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/03/20 21:31:38 by archid-           #+#    #+#              #
-#    Updated: 2020/03/20 21:47:29 by archid-          ###   ########.fr        #
+#    Updated: 2020/03/22 16:50:05 by archid-          ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -35,6 +35,6 @@ clean:
 re: clean all
 
 check: all
-	./$(NAME)
+	./$(NAME) tinyG.txt
 
 .PHONY: all re clean $(NAME)

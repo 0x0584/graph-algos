@@ -6,9 +6,13 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:49:43 by archid-           #+#    #+#             //
-//   Updated: 2020/03/21 20:50:58 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/22 17:17:37 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
+
+#include <fstream>
+#include <cstdlib>
+#include <ctime>
 
 #include "Graph.class.hpp"
 
@@ -19,14 +23,46 @@ Graph::~Graph() {
 		delete itr->second;
 }
 
-bool Graph::addVertex(const string &s) {
+Graph *Graph::readGraph(const char *file, bool directed, bool weighted) {
+    ifstream in(file);
+    Graph *g = new Graph();
+    string s;
+
+    if (!in) exit(-1);
+    while (in && getline(in, s)) {
+        string u, v, w;
+        u = string(s.substr(0, s.find(" ")));
+        s.erase(0, s.find(" ") + 1);
+        v = string(s.substr(0, s.find(" ")));
+        s.erase(0, s.find(" ") + 1);
+        w = string(s.substr(0, s.find(" ")));
+        g->addEdge(u, v, weighted ? stoi(w) : 1 , directed);
+    }
+    return g;
+}
+
+void Graph::dumpGraph() {
+    for (auto itr = g.begin(); itr != g.end(); itr++) {
+        cout << "Vertex: " << itr->first << " " << itr->second->self << endl;
+        auto adj = itr->second->adj;
+        for (auto jtr = adj.begin(); jtr != adj.end(); jtr++)
+            cout << jtr->first << " " << jtr->second->self << endl;
+        cout << endl;
+    }
+}
+
+pair<string, string> Graph::getVertexPair() {
+    return make_pair(g.begin()->first, g.rbegin()->first);
+}
+
+bool Graph::addVertex(const string& s) {
 	if (g.find(s) != g.end())
 		return false;
 	g[s] = new Vertex(s);
 	return true;
 }
 
-void Graph::addEdge(const string& from, const string& to, double w,
+void Graph::addEdge(const string& from, const string& to, int w,
 					bool directed) {
 	addVertex(from); addVertex(to);
 	g.find(from)->second->adj.push_back(make_pair(w, g.find(to)->second));
@@ -73,9 +109,9 @@ list<string> Graph::BFS(const string &s, const string &t) {
 }
 
 list<string> Graph::Dijkstra(const string& s, const string &t) {
-	map<string, double> dist;
+	map<string, int> dist;
 	map<string, string> parent;
-	priority_queue<pair<string, double>> pq;
+	priority_queue<pair<string, int>> pq;
 
 	if (g.find(s) == g.end())
 		return {};
@@ -89,7 +125,7 @@ list<string> Graph::Dijkstra(const string& s, const string &t) {
 		for (auto iter = neighbors.begin(); iter != neighbors.end(); iter++) {
 			if (dist.find(iter->second->self) != dist.end())
 				continue;
-			double cost = dist[e.first] + iter->first;
+			int cost = dist[e.first] + iter->first;
 			if (dist.find(iter->second->self) == dist.end()
 					|| cost < dist[iter->second->self]) {
 				parent[iter->second->self] = e.first;
@@ -103,7 +139,6 @@ list<string> Graph::Dijkstra(const string& s, const string &t) {
 
 void Graph::sccDFS(Vertex *e, vector<list<string>>& scc, vector<string>& vec,
                    int& id, map<string, pair<int, int>>& links) {
-
 	vec.push_back(e->self);
 	links[e->self] = {id, id};
 	id++;
@@ -133,10 +168,8 @@ vector<list<string>> Graph::SCC() {
 	vector<list<string>> scc;
 	int id = 0;
 
-	for (auto itr = g.begin(); itr != g.end(); itr++) {
-		if (links.find(itr->first) == links.end()) {
+	for (auto itr = g.begin(); itr != g.end(); itr++)
+		if (links.find(itr->first) == links.end())
             sccDFS(itr->second, scc, vec, id, links);
-        }
-	}
 	return scc;
 }

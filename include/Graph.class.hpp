@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:48:27 by archid-           #+#    #+#             //
-//   Updated: 2020/03/22 00:21:47 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/22 17:12:56 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -28,9 +28,9 @@ class Graph
 {
 	struct Vertex
 	{
-		Vertex(string s) : self(s) {};
+		Vertex(string s) : self(s) {}
 
-		vector<pair<double, Vertex *>> adj;
+		vector<pair<int, Vertex *>> adj;
 		string self;
 	};
 	map<string, Vertex *> g;
@@ -42,9 +42,14 @@ public:
 	Graph();
 	~Graph();
 
+    static Graph *readGraph(const char *file, bool directed = false,
+                            bool weighted = false);
+    void dumpGraph();
+    pair<string, string> getVertexPair();
+
 	bool addVertex(const string& s);
 	void addEdge(const string& from, const string& to,
-				 double w = 1.0, bool directed = false);
+				 int w = 1, bool directed = false);
 
 	// Breadth First Search is an elemnetary Graph algorithm that's perfect
 	// for finding the shortest path in an "unweighted graph".
