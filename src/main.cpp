@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:26:34 by archid-           #+#    #+#             //
-//   Updated: 2020/03/24 01:04:37 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/24 03:34:05 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -40,7 +40,7 @@ void testSCC(const char *file) {
 			cout << *walk << " ";
 		cout << endl;
 	}
-    cout << endl;
+	cout << endl;
 	delete g;
 }
 
@@ -59,19 +59,44 @@ void testDijkstra(const char *file) {
 	delete g;
 }
 
-void testRank(const char *file) {
+void testEdgeRank(const char *file) {
 	Graph *g = Graph::readGraph(file, true, true);
 
-    auto out = g->rankByOutEdges();
-    auto in = g->rankByInEdges();
-    auto vers = g->getVertices();
+	auto out = g->rankByEdges(true);
+	auto in = g->rankByEdges(false);
+	auto vers = g->getVertices();
 
-    cout << "ranking vertices by # of in/out edges" << endl;
-    for (auto e : vers)
-        cout << setw(3) << e << " has in: " << in[e]
-             << " out: " << out[e] << endl;
-    cout << endl;
-    delete g;
+	cout << "ranking vertices by # of in/out edges" << endl;
+	for (auto e : vers)
+		cout << setw(3) << e << " has in: " << in[e]
+			 << " out: " << out[e] << endl;
+	cout << endl;
+	delete g;
+}
+
+void testEdgeVertexManips(const char *file) {
+	Graph g;
+
+    (void)file;
+    cout << "Initial graph" << endl;
+    g.dumpGraph();
+
+    g.addEdge("foo", "bar");
+    g.addEdge("buzz", "bar");
+    g.addEdge("buzz", "foo");
+    g.addEdge("fuzz", "bar");
+    g.addEdge("foo", "car");
+
+    cout << "adding some vertices and edges" << endl;
+    g.dumpGraph();
+
+    cout << "removing some vertices and edges" << endl;
+    g.removeVertex("foo");
+    g.removeEdge("buzz", "bar", true);
+    g.removeEdge("fuzz", "bar");
+
+    cout << "final graph" << endl;
+    g.dumpGraph();
 }
 
 int main(int argc, char *argv[])
@@ -82,7 +107,7 @@ int main(int argc, char *argv[])
 	testBFS(argv[1]);
 	testSCC(argv[1]);
 	testDijkstra(argv[1]);
-    testRank(argv[1]);
-
+	testEdgeRank(argv[1]);
+    testEdgeVertexManips(argv[1]);
 	return 0;
 }

@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:49:43 by archid-           #+#    #+#             //
-//   Updated: 2020/03/24 00:54:55 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/24 03:31:53 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -45,13 +45,13 @@ Graph *Graph::readGraph(const char *file, bool directed, bool weighted) {
 }
 
 void Graph::dumpGraph() {
-	for (auto itr = g.begin(); itr != g.end(); itr++) {
-		cout << "Vertex: " << itr->first << " " << itr->second->self << endl;
-		auto adj = itr->second->adj;
-		for (auto jtr = adj.begin(); jtr != adj.end(); jtr++)
-			cout << jtr->first << " " << jtr->second->self << endl;
+	for (auto u: g) {
+		cout << "Vertex: " << u.first << " ";
+		for (auto e: u.second->adj)
+			cout << "(" << e.first << "," << e.second->self << ") ";
 		cout << endl;
 	}
+    cout << endl;
 }
 
 pair<string, string> Graph::getSampleVertexPair() {
@@ -59,20 +59,20 @@ pair<string, string> Graph::getSampleVertexPair() {
 }
 
 vector<string> Graph::getVertices() {
-    vector<string> v;
+	vector<string> v;
 
-    for (auto u: g)
-        v.push_back(u.first);
-    return v;
+	for (auto u: g)
+		v.push_back(u.first);
+	return v;
 }
 
 vector<tuple<string, string, int>> Graph::getEdges() {
-    vector<tuple<string, string, int>> v;
+	vector<tuple<string, string, int>> v;
 
-    for (auto u: g)
-        for (auto e: u.second->adj)
-            v.push_back(make_tuple(u.first, e.second->self, e.first));
-    return v;
+	for (auto u: g)
+		for (auto e: u.second->adj)
+			v.push_back({u.first, e.second->self, e.first});
+	return v;
 }
 
 bool Graph::addVertex(const string& s) {
@@ -82,12 +82,56 @@ bool Graph::addVertex(const string& s) {
 	return true;
 }
 
+void Graph::removeVertex(const string& s) {
+    for (auto nei: g[s]->adj)
+        nei.second->radj.erase(
+            find_if(nei.second->radj.begin(),
+                    nei.second->radj.end(),
+                    [&s](const pair<int, Vertex *>& e) {
+                        return s == e.second->self;
+                    }));
+    for (auto nei: g[s]->radj)
+        nei.second->adj.erase(
+            find_if(nei.second->adj.begin(),
+                    nei.second->adj.end(),
+                    [&s](const pair<int, Vertex *>& e) {
+                        return s == e.second->self;
+                    }));
+    delete g[s];
+    g.erase(s);
+}
+
+void Graph::set_edge(const string& from, const string& to, int w) {
+	g[from]->adj.push_back({w, g[to]});
+	g[to]->radj.push_back({w, g[from]});
+}
+
 void Graph::addEdge(const string& from, const string& to, int w,
 					bool directed) {
 	addVertex(from); addVertex(to);
-	g.find(from)->second->adj.push_back(make_pair(w, g.find(to)->second));
-	if (!directed)
-		g.find(to)->second->adj.push_back(make_pair(w, g.find(from)->second));
+	set_edge(from, to, w);
+	if (!directed) set_edge(to, from, w);
+}
+
+void Graph::unset_edge(const string& from, const string& to) {
+    g[from]->adj.erase(
+        find_if(g[from]->adj.begin(), g[from]->adj.end(),
+                [&to](const pair<int, Vertex *>& e) {
+                          return to == e.second->self;
+                }));
+    g[to]->radj.erase(
+        find_if(g[to]->radj.begin(), g[to]->radj.end(),
+                [&from](const pair<int, Vertex *>& e) {
+                    return from == e.second->self;
+                }));
+}
+
+void Graph::removeEdge(const string& from, const string& to, bool directed) {
+    if (g.find(from) == g.end() || g.find(to) == g.end())
+        return ;
+    unset_edge(from, to);
+    if (!directed)
+        unset_edge(to, from);
 }
 
 list<string> Graph::construct_path(map<string, string>& parent,
@@ -100,8 +144,8 @@ list<string> Graph::construct_path(map<string, string>& parent,
 		return path;
 	// keep tracing back the parents until we arrive.
 	while (true) {
-		// pushing vertices before testing on arrival to include
-		// source and destination nodes
+		// pushing vertices before testing on arrival
+		// to include source and destination nodes
 		path.push_front(walk);
 		if (walk == s)
 			break;
@@ -117,24 +161,21 @@ list<string> Graph::BFS(const string &s, const string &t) {
 	if (g.find(s) == g.end())
 		return {};
 	q.push(s);
-	while (!q.empty())
+	while (!q.empty() && q.front() != t)
 	{
-		if (q.front() == t) break;
-		auto neighbors = g.find(q.front())->second->adj;
-		for (auto itr = neighbors.begin(); itr != neighbors.end(); itr++) {
+		for (auto nei: g[q.front()]->adj) {
 			// this plays the role of marking vertices as seen, since we
 			// only set the parent once, thus we can ignore vertices that
 			// already have a parent
-			if (parent.find(itr->second->self) != parent.end())
+			if (parent.find(nei.second->self) != parent.end())
 				continue;
-			q.push(itr->second->self);
-			parent[itr->second->self] = q.front();
+			q.push(nei.second->self);
+			parent[nei.second->self] = q.front();
 		}
 		q.pop();
 	}
 	return construct_path(parent, s, t);
 }
-
 
 list<string> Graph::Dijkstra(const string& s, const string &t) {
 	map<string, int> dist;
@@ -153,20 +194,19 @@ list<string> Graph::Dijkstra(const string& s, const string &t) {
 		// this is a lazy way of getting rid of outdated distances
 		if (dist.find(e.second) != dist.end() && dist[e.second] < e.first)
 			continue;
-		auto neighbors = g.find(e.second)->second->adj;
-		for (auto iter = neighbors.begin(); iter != neighbors.end(); iter++) {
+		for (auto nei: g[e.second]->adj) {
 			// initialize all undiscovered vertices to infinity
-			if (dist.find(iter->second->self) == dist.end())
-				dist[iter->second->self] = numeric_limits<int>::max();
+			if (dist.find(nei.second->self) == dist.end())
+				dist[nei.second->self] = numeric_limits<int>::max();
 			// computing the new distance and perform the edges relaxation
 			// simply by choosing the min distance
-			int cost = dist[e.second] + iter->first;
-			if (cost < dist[iter->second->self]) {
-				parent[iter->second->self] = e.second;
-				dist[iter->second->self] = cost;
+			int cost = dist[e.second] + nei.first;
+			if (cost < dist[nei.second->self]) {
+				parent[nei.second->self] = e.second;
+				dist[nei.second->self] = cost;
 				// update the best distance by enqueuing the new
 				// distance. Although this might cause duplication
-				pq.push({cost, iter->second->self});
+				pq.push({cost, nei.second->self});
 			}
 		}
 		// since we traverse always the next most promising vertex by
@@ -178,6 +218,12 @@ list<string> Graph::Dijkstra(const string& s, const string &t) {
 	return construct_path(parent, s, t);
 }
 
+inline void Graph::set_link(map<string, pair<int, int>>& links,
+							Vertex *u, Vertex *v) {
+	links[u->self].second = min(links[u->self].second,
+								links[v->self].second);
+}
+
 void Graph::sccDFS(Vertex *e, vector<vector<string>>& scc, vector<string>& v,
 				   int& id, map<string, pair<int, int>>& links) {
 	// we push all vertices to the vector, so that we can tell which
@@ -187,30 +233,30 @@ void Graph::sccDFS(Vertex *e, vector<vector<string>>& scc, vector<string>& v,
 	id++;
 
 	// Traverse all the adjacent vertices in a DFS fashion
-	for (auto itr = e->adj.begin(); itr != e->adj.end(); itr++) {
-		if (links.find(itr->second->self) == links.end())
-			sccDFS(itr->second, scc, v, id, links);
+	for (auto nei: e->adj) {
+		// recursively keep visiting undiscovered vertices with DFS
+		if (links.find(nei.second->self) == links.end())
+			sccDFS(nei.second, scc, v, id, links);
 		// on the callback, we set the lowest_id to be the min between
 		// the neighbors lowest, and self's lowest.
 		// this process happens recursively so that all the vertices
 		// that belong to the same connected component have same lowest id
-		if (find(v.begin(), v.end(), itr->second->self) != v.end())
-			links[e->self].second = min(links[e->self].second,
-										links[itr->second->self].second);
+		if (find(v.begin(), v.end(), nei.second->self) != v.end())
+			set_link(links, e, nei.second);
 	}
 
 	// once we return finish the recursive DFS, and return to the
 	// initial callback, we pop from the visiting vector all the
 	// vertices that belong to the connected component
 	if (links[e->self].first == links[e->self].second) {
-		vector<string> lst;
-		for (auto node = v.back(); ; node = v.back()) {
-			v.pop_back();
-			lst.push_back(node);
+		vector<string> vect;
+		while (true) {
+			auto node = v.back(); v.pop_back();
+			vect.push_back(node);
 			if (node == e->self)
 				break;
 		}
-		scc.push_back(lst);
+		scc.push_back(vect);
 	}
 }
 
@@ -228,21 +274,13 @@ vector<vector<string>> Graph::SCC() {
 	return scc;
 }
 
-map<string, int> Graph::rankByOutEdges() {
+map<string, int> Graph::rankByEdges(bool out) {
 	map<string, int> m;
 
 	for (auto itr = g.begin(); itr != g.end(); itr++) {
-        auto size = itr->second->adj.size();
-        if (size != 0) m[itr->first] = size;
-    }
-    return m;
-}
-
-map<string, int> Graph::rankByInEdges() {
-    map<string, int> m;
-
-	for (auto itr = g.begin(); itr != g.end(); itr++)
-        for (auto u : itr->second->adj)
-            m[u.second->self]++;
-    return m;
+		auto size = out ? itr->second->adj.size()
+			: itr->second->radj.size();
+		if (size != 0) m[itr->first] = size;
+	}
+	return m;
 }
