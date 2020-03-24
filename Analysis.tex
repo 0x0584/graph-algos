@@ -4,17 +4,17 @@
 
 \title{Solution of the Graph Algrithms Assignment}
 \author{Anas Rchid}
-
+\date{March 20, 2020}
 \begin{document}
 \maketitle
 
 \section*{Abstract}
 
-This is a solution to a graph algorithms assignment, it has three problems with two objectives. The problems are common in graph theory in general, being \textit{strongly connected components}, \textit{path finding} and \textit{vertices ranking}. Solving those problems by a mere implementation is not enough, thus the existance of this paper. It aims to explain some theoretical details about the implementations ad the reasons behind some decisions.
+This is a solution to a graph algorithms assignment, it has three problems with two objectives. The problems are common in graph theory in general, being \textit{strongly connected components}, \textit{path finding} and \textit{vertices ranking}. Solving those problems by a mere implementation is not enough, thus the existance of this paper. It aims to explain some theoretical details about the implementations and the reason behind some decisions.
 
 \section{Graphs and Graph Algorithms}
 
-A graph $G(V,E)$ is a pair of sets $V$ and $E$ being the set of vertices and the set edges respectively. Each edge has links two vertices such that one is a source and the other is a destination.
+A graph $G(V,E)$ is a pair of sets $V$ and $E$, being the set of vertices and the set edges, respectively. Each edge has links two vertices such that one is a source and the other is a destination.
 
 There are many graph algorithms, and depending on the type of the graph, some might be applicatble, others are not.  Generally, graphs have two distinct properties, namely \textit{edge direction} and \textit{edge weight}. Thus we have four possibilies:
 
@@ -33,13 +33,48 @@ Along with Depth First Search, Breath First Search is a fundamental graph traver
 
 BFS travese the graph is a \textit{layered} fashion, meaning that each time we move through the whole graph level by level, starting at a given vertex, and making our way thourgh, until we visit all other reachable vertices.
 
-\paragraph{Algorithm details} Given a graph $G(V,E)$, a vertex $s \in G$ and a queue\footnote{Standard implementation, with there operation isempty, enqueue and dequeue} $Q$. We start by enqueuing the $s$ and mark it as visited\footnote{This could be done either by having an explicite field in the definition of vertices or by maintaining an external array}, so that we can ignore it later if we reached it from another path. Then while $Q$ is not empty, we enqueue all destination nodes of $s$, after marking them too as visited. Repeat until we traverse the whole graph.
+\paragraph{Algorithm details} Given a graph $G(V,E)$, a vertex $s \in G$ and a queue $Q$. We start by enqueuing the $s$ and mark it as visited, so that we can ignore it later if we reached it from another path. Then while $Q$ is not empty, we enqueue all destination vertices of $s$, after marking them too as visited.
 
-\paragraph{Time Complexity} First of all, we shall traverse all the vertices, $O(|V|)$, and we follow all the edges $O(|E|)$\footnote{Graphs can be sparse or dense, thus $O(|E|)$ may vary between $O(1)$ and $O(|V|^2)$}. Thus the total time complexity of the Breath First Search is $O(|V|+|E|)$. However, since we ignore vertices that are already visited, the overall worst case time complexity tend to be $O(|V|)$.
+Repeating this process with each vertex in $Q$ ensure that we'll traverse the whole graph as layers. However, if a destination vertex is specified, we might stop as soon as it's dequeued.
 
-\paragraph{Space Complexity} The queue used to track which vertices to visit next consume a space complexity of $O(|V|)$ at the worst case, since we might store all vertices in the queue at once.
+\paragraph{Time Complexity} First of all, we shall traverse all the vertices, $O(V)$, and we follow all the edges\footnote{Graphs can be sparse or dense, thus $O(E)$ may vary between $O(1)$ and $O(V^2)$} $O(E)$. Thus the total time complexity of the Breath First Search is $O(V+E)$. However, since we ignore vertices that are already visited, the overall worst case time complexity tend to be $O(V)$.
+
+\paragraph{Space Complexity} The queue used to track which vertices to visit next consume a space complexity of $O(V)$ at the worst case, since we might store all vertices in the queue at once.
+
+\paragraph{Applications} As mentioned above, BFS finds the shortest path within  an unweighted graph, in terms of number of edges. Also, it is a sub-routine in FordFulkerson Method to find the maximum flow in a given graph. And due to its nature, BFS makes it also perfect as well for finding near neighbors\footnote{Since we traverse the graph layer at a time, and in all directions}, which is really useful to know about networks and navigations systems, rather than using it to find whether a graph is Bipartite\footnote{A graph that it's vertices set could be splited into two sets, such that there is no edge connecting two vertices in the same set} or not.
 
 \subsection{Dijkstra's Algorithm}
+
+Dijkstra is a brilliant computer scientist, he has invented many things in the field and his \textit{shortest path algorithm} happens to be so efficient that it becomes sort of a standard when it comes to shortest paths\footnote{Shortest here means minimum cost in terms of the total edge weight between two vertices}.
+
+The main idea of Dijkstra is to be as greedy as possible, by always taking the most promising edge, in terms of the total edge weight. This is done by maintaining an array of distances, as well as a priority queue to keep picking the next most promising vertex.
+
+\paragraph{Algorithm Details} Given a graph $G(V,E)$, a starting vertex $s$, an array $d$, which stores the \textit{minimum distance} between $s$ and all the other vertices in the graph and a \textit{priority queue} $pq$ to help keep picking successive promising vertices ---  vertices with the smallest distance from the $s$. This is done by storing pairs $(v,c)$ of each vertex and its distance.
+
+Beforehand, we set the distance of $s$ to $0$, and enqueue it to $pq$. Then, while $pq$ still has entries, we poll a pair, namely $e$. Then for all the $n_i$ neighbors of $e.v$, let $c$ be as the total distance between $s$ and $n_i$ i.e., the stored distance $d[e.v]$ + $n_i$'s edge weight. If $n_i$ hasn't been reached already, then we enqueue the pair $(n_i,c)$ into $pq$. Otherwise, we only enqueue the pair $(n_i,c)$ \textit{iff} $c < d[n_i]$. If so, we update the distance $d[n_i]$ since we've found a better one.
+
+Obviously, this approach might result having some outdated distances of the same vertex, but we can simply ignore those in case we have already a better distance, indeed  $d[e.v] < e.c$.
+
+The algorithm guarantees that we'll compute the minimum distance between each pair of vertices in $G$ once it terminates. We can stop early if a destination vertex is given, since it's distance would not change once reached even we can still discover another vertices.
+
+\paragraph{Time Complexity}
+
+the main factor determining the complexity of the Dijkstra algorithm, is the data structre we use to set prioritize vertices.
+
+\subparagraph{Using Standard Priority Queues}
+$O(V^2)$ using a standard priority queue,
+
+\subparagraph{Using Indexed Priority Queues} The act of keep pushing new minimum distances is a lazy approach, since it create duplicates that we can easily ignore by comparing the stored distances, but the in spare graphs, this would result some unnecessary work.
+
+An Alternative solution would be to set the key of $n_i$ into $c$ instead, this is done in an indexed priority queue implemented using a MinHeap, which allows to decrease a key, resulting an overall complexity $O((V+E)\log(V))$
+
+\subparagraph{Using Fibonacci Heaps}
+
+$O(E + V\log(V))$
+\paragraph{Space Complexity}
+\paragraph{Applications}
+
+\subsection{Constructing a path}
 
 \section{Strongly Connected Components}
 \subsection{Tarkan's Algorithm}
