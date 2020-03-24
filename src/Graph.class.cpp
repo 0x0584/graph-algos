@@ -6,45 +6,21 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:49:43 by archid-           #+#    #+#             //
-//   Updated: 2020/03/24 03:31:53 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/25 11:09:04 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
-#include <fstream>
-
 #include "Graph.class.hpp"
 
-Graph::Graph() : g() {}
-
-Graph::~Graph() {
+template<class T, class W> Graph<T, W>::Graph() : g() {}
+template<class T, class W> Graph<T, W>::~Graph() {
 	for (auto itr = g.begin(); itr != g.end(); itr++)
 		// vertices were allocated dynamically so they must be free'd
 		delete itr->second;
 }
 
-Graph *Graph::readGraph(const char *file, bool directed, bool weighted) {
-	ifstream in(file);
-	Graph *g = new Graph();
-	string s;
-
-	if (!in) exit(-1);
-
-	// basically each line of the file is u v w
-	// so we read line by line and add edges
-	while (in && getline(in, s)) {
-		string u, v, w;
-
-		u = string(s.substr(0, s.find(" ")));
-		s.erase(0, s.find(" ") + 1);
-		v = string(s.substr(0, s.find(" ")));
-		s.erase(0, s.find(" ") + 1);
-		w = string(s.substr(0, s.find(" ")));
-		g->addEdge(u, v, weighted ? stoi(w) : 1 , directed);
-	}
-	return g;
-}
-
-void Graph::dumpGraph() {
+template<class T, class W>
+void Graph<T, W>::dumpGraph() {
 	for (auto u: g) {
 		cout << "Vertex: " << u.first << " ";
 		for (auto e: u.second->adj)
@@ -54,20 +30,23 @@ void Graph::dumpGraph() {
     cout << endl;
 }
 
-pair<string, string> Graph::getSampleVertexPair() {
+template<class T, class W>
+pair<T, T> Graph<T, W>::getSampleVertexPair() {
 	return make_pair(g.begin()->first, g.rbegin()->first);
 }
 
-vector<string> Graph::getVertices() {
-	vector<string> v;
+template<class T, class W>
+vector<T> Graph<T, W>::getVertices() {
+	vector<T> v;
 
 	for (auto u: g)
 		v.push_back(u.first);
 	return v;
 }
 
-vector<tuple<string, string, int>> Graph::getEdges() {
-	vector<tuple<string, string, int>> v;
+template<class T, class W>
+vector<tuple<T, T, W>> Graph<T, W>::getEdges() {
+	vector<tuple<T, T, W>> v;
 
 	for (auto u: g)
 		for (auto e: u.second->adj)
@@ -75,58 +54,64 @@ vector<tuple<string, string, int>> Graph::getEdges() {
 	return v;
 }
 
-bool Graph::addVertex(const string& s) {
+template<class T, class W>
+bool Graph<T, W>::addVertex(const T& s) {
 	if (g.find(s) != g.end())
 		return false;
 	g[s] = new Vertex(s);
 	return true;
 }
 
-void Graph::removeVertex(const string& s) {
+template<class T, class W>
+void Graph<T, W>::removeVertex(const T& s) {
     for (auto nei: g[s]->adj)
         nei.second->radj.erase(
             find_if(nei.second->radj.begin(),
                     nei.second->radj.end(),
-                    [&s](const pair<int, Vertex *>& e) {
+                    [&s](const pair<W, Vertex *>& e) {
                         return s == e.second->self;
                     }));
     for (auto nei: g[s]->radj)
         nei.second->adj.erase(
             find_if(nei.second->adj.begin(),
                     nei.second->adj.end(),
-                    [&s](const pair<int, Vertex *>& e) {
+                    [&s](const pair<W, Vertex *>& e) {
                         return s == e.second->self;
                     }));
     delete g[s];
     g.erase(s);
 }
 
-void Graph::set_edge(const string& from, const string& to, int w) {
+template<class T, class W>
+void Graph<T, W>::set_edge(const T& from, const T& to, W w) {
 	g[from]->adj.push_back({w, g[to]});
 	g[to]->radj.push_back({w, g[from]});
 }
 
-void Graph::addEdge(const string& from, const string& to, int w,
+template<class T, class W>
+void Graph<T, W>::addEdge(const T& from, const T& to, W w,
 					bool directed) {
 	addVertex(from); addVertex(to);
 	set_edge(from, to, w);
 	if (!directed) set_edge(to, from, w);
 }
 
-void Graph::unset_edge(const string& from, const string& to) {
+template<class T, class W>
+void Graph<T, W>::unset_edge(const T& from, const T& to) {
     g[from]->adj.erase(
         find_if(g[from]->adj.begin(), g[from]->adj.end(),
-                [&to](const pair<int, Vertex *>& e) {
+                [&to](const pair<W, Vertex *>& e) {
                           return to == e.second->self;
                 }));
     g[to]->radj.erase(
         find_if(g[to]->radj.begin(), g[to]->radj.end(),
-                [&from](const pair<int, Vertex *>& e) {
+                [&from](const pair<W, Vertex *>& e) {
                     return from == e.second->self;
                 }));
 }
 
-void Graph::removeEdge(const string& from, const string& to, bool directed) {
+template<class T, class W>
+void Graph<T, W>::removeEdge(const T& from, const T& to, bool directed) {
     if (g.find(from) == g.end() || g.find(to) == g.end())
         return ;
     unset_edge(from, to);
@@ -134,10 +119,11 @@ void Graph::removeEdge(const string& from, const string& to, bool directed) {
         unset_edge(to, from);
 }
 
-list<string> Graph::construct_path(map<string, string>& parent,
-								   const string &s, const string &t) {
-	list<string> path;
-	string walk = t;
+template<class T, class W>
+list<T> Graph<T, W>::construct_path(map<T, T>& parent,
+								   const T &s, const T &t) {
+	list<T> path;
+	T walk = t;
 
 	// destination not have no parent, thus it hasn't been reached
 	if (parent.find(t) == parent.end())
@@ -154,9 +140,10 @@ list<string> Graph::construct_path(map<string, string>& parent,
 	return path;
 }
 
-list<string> Graph::BFS(const string &s, const string &t) {
-	map<string, string> parent;
-	queue<string> q;
+template<class T, class W>
+list<T> Graph<T, W>::BFS(const T &s, const T &t) {
+	map<T, T> parent;
+	queue<T> q;
 
 	if (g.find(s) == g.end())
 		return {};
@@ -177,12 +164,13 @@ list<string> Graph::BFS(const string &s, const string &t) {
 	return construct_path(parent, s, t);
 }
 
-list<string> Graph::Dijkstra(const string& s, const string &t) {
-	map<string, int> dist;
-	map<string, string> parent;
-	priority_queue<pair<int, string>,
-				   vector<pair<int, string>>,
-				   greater<pair<int, string>>> pq;
+template<class T, class W>
+list<T> Graph<T, W>::Dijkstra(const T& s, const T &t) {
+	map<T, W> dist;
+	map<T, T> parent;
+	priority_queue<pair<W, T>,
+				   vector<pair<W, T>>,
+				   greater<pair<W, T>>> pq;
 
 	if (g.find(s) == g.end())
 		return {};
@@ -197,10 +185,10 @@ list<string> Graph::Dijkstra(const string& s, const string &t) {
 		for (auto nei: g[e.second]->adj) {
 			// initialize all undiscovered vertices to infinity
 			if (dist.find(nei.second->self) == dist.end())
-				dist[nei.second->self] = numeric_limits<int>::max();
+				dist[nei.second->self] = numeric_limits<W>::max();
 			// computing the new distance and perform the edges relaxation
 			// simply by choosing the min distance
-			int cost = dist[e.second] + nei.first;
+			W cost = dist[e.second] + nei.first;
 			if (cost < dist[nei.second->self]) {
 				parent[nei.second->self] = e.second;
 				dist[nei.second->self] = cost;
@@ -218,25 +206,24 @@ list<string> Graph::Dijkstra(const string& s, const string &t) {
 	return construct_path(parent, s, t);
 }
 
-inline void Graph::set_link(map<string, pair<int, int>>& links,
-							Vertex *u, Vertex *v) {
-	links[u->self].second = min(links[u->self].second,
-								links[v->self].second);
+template<class T, class W>
+inline void Graph<T, W>::set_link(map<T, Link>& links, Vertex *u, Vertex *v) {
+	links[u->self].low_id = min(links[u->self].low_id, links[v->self].low_id);
 }
 
-void Graph::sccDFS(Vertex *e, vector<vector<string>>& scc, vector<string>& v,
-				   int& id, map<string, pair<int, int>>& links) {
+template<class T, class W>
+void Graph<T, W>::sccDFS(Vertex *e, vector<vector<T>>& scc, vector<T>& v,
+                         Link& l, map<T, Link>& links) {
 	// we push all vertices to the vector, so that we can tell which
 	// vertices we're currently following
 	v.push_back(e->self);
-	links[e->self] = {id, id};
-	id++;
+    links[e->self] = Link(l);
 
 	// Traverse all the adjacent vertices in a DFS fashion
 	for (auto nei: e->adj) {
 		// recursively keep visiting undiscovered vertices with DFS
 		if (links.find(nei.second->self) == links.end())
-			sccDFS(nei.second, scc, v, id, links);
+			sccDFS(nei.second, scc, v, l, links);
 		// on the callback, we set the lowest_id to be the min between
 		// the neighbors lowest, and self's lowest.
 		// this process happens recursively so that all the vertices
@@ -248,34 +235,35 @@ void Graph::sccDFS(Vertex *e, vector<vector<string>>& scc, vector<string>& v,
 	// once we return finish the recursive DFS, and return to the
 	// initial callback, we pop from the visiting vector all the
 	// vertices that belong to the connected component
-	if (links[e->self].first == links[e->self].second) {
-		vector<string> vect;
+	if (links[e->self].id == links[e->self].low_id) {
+		vector<T> vect;
 		while (true) {
 			auto node = v.back(); v.pop_back();
 			vect.push_back(node);
-			if (node == e->self)
-				break;
+			if (node == e->self) break;
 		}
 		scc.push_back(vect);
 	}
 }
 
-vector<vector<string>> Graph::SCC() {
-	map<string, pair<int, int>> links; // a pair of <id, lowest_id>
-	vector<string> visiting;
-	vector<vector<string>> scc;
-	int id = 0;
+template<class T, class W>
+vector<vector<T>> Graph<T, W>::SCC() {
+	map<T, Link> links; // a pair of <id, lowest_id>
+	vector<T> visiting;
+	vector<vector<T>> scc;
+	Link lnk;
 
 	for (auto itr = g.begin(); itr != g.end(); itr++)
 		// each time we start at a different node, but only if it's
 		// not a part of an already found connected component
 		if (links.find(itr->first) == links.end())
-			sccDFS(itr->second, scc, visiting, id, links);
+			sccDFS(itr->second, scc, visiting, lnk, links);
 	return scc;
 }
 
-map<string, int> Graph::rankByEdges(bool out) {
-	map<string, int> m;
+template<class T, class W>
+map<T, W> Graph<T, W>::rankByEdges(bool out) {
+	map<T, W> m;
 
 	for (auto itr = g.begin(); itr != g.end(); itr++) {
 		auto size = out ? itr->second->adj.size()
@@ -284,3 +272,18 @@ map<string, int> Graph::rankByEdges(bool out) {
 	}
 	return m;
 }
+
+template<class T, class W>
+set<pair<double, T>, greater<pair<double, T>>> Graph<T, W>::pageRank() {
+    set<pair<double, T>, greater<pair<double, T>>> s;
+    const W n_vertices = g.size();
+
+    for (auto e : g) s.insert({1.0 / n_vertices, e.first});
+
+
+    return s;
+}
+
+template class Graph<int, int>;
+template class Graph<char, int>;
+template class Graph<string, int>;

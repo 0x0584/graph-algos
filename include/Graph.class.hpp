@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:48:27 by archid-           #+#    #+#             //
-//   Updated: 2020/03/24 03:17:53 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/25 11:09:00 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -28,49 +28,57 @@ using namespace std;
 // represents a graph data structure, and provides basic graph manipulation
 // functions such as adding vertices and edges, as well as some standard
 // algorithms such as BFS, Dijkstra and Trajans SCC.
+template<class T, class W>
 class Graph
 {
     // this is an internal structure that to represent each vertex
 	// it holds the vertex identity as well as its adjacent vertices
 	struct Vertex
 	{
-		Vertex(string s) : self(s) {}
+		T self;                         // vertex's identity
 
-		// vertex's identity
-		string self;
+		vector<pair<W, Vertex *>> adj;  // out-going edges
+		vector<pair<W, Vertex *>> radj; // in-coming edges
 
-		// neighbor vertices
-		vector<pair<int, Vertex *>> adj;
-
-		// vertices that have this vertex as neighbor
-		// handy for vertex and edge removal
-		vector<pair<int, Vertex *>> radj;
+		Vertex(T v) : self(v) {}
 	};
+
+    struct Link
+    {
+        int id, low_id;
+
+        Link() : id(0), low_id(0) {}
+        Link(Link& l) : id(l.id), low_id(l.id) {l.id++;}
+
+        Link& operator= (const Link& l) {
+            id = low_id = l.id;
+            return *this;
+        }
+    };
 
 	// representing the graph as a map helps to the efficiency of retrieving
 	// and manipulating vertices
-	map<string, Vertex *> g;
+	map<T, Vertex *> g;
 
 	// internal method to add an edge to both vertices, to ease of
 	// vertex and removal, altought this is doesn't mean that it's
 	// undirected! it's just a copy stored in the other vertex.
-	void set_edge(const string& from, const string& to, int w);
+	void set_edge(const T& from, const T& to, W w);
 
     // internal method to remove an edge from adjacency list
-	void unset_edge(const string& from, const string& to);
-
-	// Sets the low link of u to the min low keys between itself and v
-	void set_link(map<string, pair<int, int>>& links, Vertex *u, Vertex *v);
+	void unset_edge(const T& from, const T& to);
 
 	// internal protocol to trace back a path starting from the destination
 	// vertex up until the source vertex
-	list<string> construct_path(map<string, string>& parent,
-								const string &s, const string &t);
+	list<T> construct_path(map<T, T>& parent, const T &s, const T &t);
+
+	// Sets the low link of u to the min low keys between itself and v
+	void set_link(map<T, Link>& links, Vertex *u, Vertex *v);
 
 	// a custom DFS to set the component's id, used by SCC to find the
 	// strongly connected components in the graph
-	void sccDFS(Vertex *e, vector<vector<string>>& scc, vector<string>& vec,
-				int& id, map<string, pair<int, int>>& links);
+	void sccDFS(Vertex *e, vector<vector<T>>& scc, vector<T>& visiting,
+				Link& l, map<T, Link>& links);
 
 public:
 
@@ -80,47 +88,42 @@ public:
 	void dumpGraph();
 
 	// used for testing
-	pair<string, string> getSampleVertexPair();
+	pair<T, T> getSampleVertexPair();
 
 	// return a vector of all the vertices of the graph
-	vector<string> getVertices();
+	vector<T> getVertices();
 
 	// return all the edges of the graph, if the graph an edge is
 	// undirected, both directions are included
-	vector<tuple<string, string, int>> getEdges();
-
-	// fill a graph with vertices and edges from the given file
-	// the graph properties, namely directness and weight could be
-	// specified as well.
-	static Graph *readGraph(const char *file, bool directed = false,
-							bool weighted = false);
+	vector<tuple<T, T, W>> getEdges();
 
 	// add the vertex s to the graph, if it's not already there
-	bool addVertex(const string& s);
+	bool addVertex(const T& s);
 
 	// removes teh vertex s, and all it's edges
-	void removeVertex(const string& s);
+	void removeVertex(const T& s);
 
 	// add an edge between the two given vertices, weight and direction
 	// could be specified as well
-	void addEdge(const string& from, const string& to,
-				 int w = 1, bool directed = false);
+	void addEdge(const T& from, const T& to, W w = 1, bool directed = false);
 
 	// remove the edge (from, to)
-	void removeEdge(const string& from, const string& to,
-					bool directed = false);
+	void removeEdge(const T& from, const T& to, bool directed = false);
 
 	// Breadth First Search
-	list<string> BFS(const string& s, const string& t);
+	list<T> BFS(const T& s, const T& t);
 
 	// Dijkstra Shortest Path
-	list<string> Dijkstra(const string& s, const string& t);
+	list<T> Dijkstra(const T& s, const T& t);
 
 	// Trajans Strong Connected Components
-	vector<vector<string>> SCC();
+	vector<vector<T>> SCC();
 
 	// rank vertices based on many desired properties
-	map<string, int> rankByEdges(bool out = true);
+	map<T, W> rankByEdges(bool out = true);
+
+    // implementation of the Google's PageRank algorithm to rank pages
+    set<pair<double, T>, greater<pair<double, T>>> pageRank();
 };
 
 #endif

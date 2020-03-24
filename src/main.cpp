@@ -6,33 +6,57 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:26:34 by archid-           #+#    #+#             //
-//   Updated: 2020/03/24 03:34:05 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/25 00:05:51 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
+#include <fstream>
 #include <iomanip>
 
 #include "Graph.class.hpp"
 
-void testBFS(const char *file) {
-	Graph *g = Graph::readGraph(file);
+typedef Graph<string, int> sample_graph;
 
-	auto p = g->getSampleVertexPair();
-	auto l = g->BFS(p.first, p.second);
+void fillGraph(sample_graph& g, const char *file,
+               bool directed = false, bool weighted = false) {
+	ifstream in(file);
+	string s;
+
+	if (!in) exit(-1);
+	// basically each line of the file is u v w
+	// so we read line by line and add edges
+	while (in && getline(in, s)) {
+		string u, v, w;
+
+		u = string(s.substr(0, s.find(" ")));
+		s.erase(0, s.find(" ") + 1);
+		v = string(s.substr(0, s.find(" ")));
+		s.erase(0, s.find(" ") + 1);
+		w = string(s.substr(0, s.find(" ")));
+		g.addEdge(u, v, weighted ? stoi(w) : 1 , directed);
+	}
+}
+
+void testBFS(const char *file) {
+
+    sample_graph g;
+
+    fillGraph(g, file);
+	auto p = g.getSampleVertexPair();
+	auto l = g.BFS(p.first, p.second);
 
 	cout << "Shortest Path between " << p.first << " and " << p.second
 		 << " using BFS is: " << endl;
-	for (auto itr = l.begin(); itr != l.end(); itr++) {
+	for (auto itr = l.begin(); itr != l.end(); itr++)
 		cout << *itr << " ";
-	}
 	cout << endl << endl;
-	delete g;
 }
 
 void testSCC(const char *file) {
-	Graph *g = Graph::readGraph(file, true);
+    sample_graph g;
 
-	auto l = g->SCC();
+    fillGraph(g, file, true);
+	auto l = g.SCC();
 
 	cout << "Number of Connected Components: " << l.size() << endl;
 	for (auto iter = l.begin(); iter != l.end(); iter++) {
@@ -41,41 +65,39 @@ void testSCC(const char *file) {
 		cout << endl;
 	}
 	cout << endl;
-	delete g;
 }
 
 void testDijkstra(const char *file) {
-	Graph *g = Graph::readGraph(file, false, true);
+    sample_graph g;
 
-	auto p = g->getSampleVertexPair();
-	auto l = g->Dijkstra(p.first, p.second);
+    fillGraph(g, file, false, true);
+	auto p = g.getSampleVertexPair();
+	auto l = g.Dijkstra(p.first, p.second);
 
 	cout << "Shortest Path between " << p.first << " and " << p.second
 		 << " using Dijkstra is: " << endl;
-	for (auto itr = l.begin(); itr != l.end(); itr++) {
-		cout << *itr << " ";
-	}
+	for (auto e: l)
+		cout << e << " ";
 	cout << endl << endl;
-	delete g;
 }
 
 void testEdgeRank(const char *file) {
-	Graph *g = Graph::readGraph(file, true, true);
+    sample_graph g;
 
-	auto out = g->rankByEdges(true);
-	auto in = g->rankByEdges(false);
-	auto vers = g->getVertices();
+    fillGraph(g, file, true, true);
+	auto out = g.rankByEdges(true);
+	auto in = g.rankByEdges(false);
+	auto vers = g.getVertices();
 
 	cout << "ranking vertices by # of in/out edges" << endl;
 	for (auto e : vers)
 		cout << setw(3) << e << " has in: " << in[e]
 			 << " out: " << out[e] << endl;
 	cout << endl;
-	delete g;
 }
 
 void testEdgeVertexManips(const char *file) {
-	Graph g;
+	sample_graph g;
 
     (void)file;
     cout << "Initial graph" << endl;
@@ -109,5 +131,6 @@ int main(int argc, char *argv[])
 	testDijkstra(argv[1]);
 	testEdgeRank(argv[1]);
     testEdgeVertexManips(argv[1]);
+
 	return 0;
 }
