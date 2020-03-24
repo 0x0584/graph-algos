@@ -6,7 +6,7 @@
 #    By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/03/20 21:31:38 by archid-           #+#    #+#              #
-#    Updated: 2020/03/23 09:04:05 by archid-          ###   ########.fr        #
+#    Updated: 2020/03/23 09:07:51 by archid-          ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -35,7 +35,6 @@ clean:
 re: clean all
 
 check:
-	@make clean
 	@ls -lR
 	@echo
 	@make re

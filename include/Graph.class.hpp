@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:48:27 by archid-           #+#    #+#             //
-//   Updated: 2020/03/22 22:56:28 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/24 00:56:25 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -19,6 +19,7 @@
 #include <vector>
 #include <map>
 #include <list>
+#include <set>
 #include <queue>
 #include <algorithm>
 
@@ -53,14 +54,25 @@ class Graph
 
     // a custom DFS to set the component's id, used by SCC to find the
     // strongly connected components in the graph
-    void sccDFS(Vertex *e, vector<list<string>>& scc, vector<string>& vec,
+    void sccDFS(Vertex *e, vector<vector<string>>& scc, vector<string>& vec,
                 int& id, map<string, pair<int, int>>& links);
 
 public:
 
 	Graph(); ~Graph();
+
+    // output every vertex and edge
     void dumpGraph();
-    pair<string, string> getVertexPair();
+
+    // used for testing
+    pair<string, string> getSampleVertexPair();
+
+    // return a vector of all the vertices of the graph
+    vector<string> getVertices();
+
+    // return all the edges of the graph, if the graph an edge is
+    // undirected, both directions are included
+    vector<tuple<string, string, int>> getEdges();
 
     // fill a graph with vertices and edges from the given file
     // the graph properties, namely directness and weight could be
@@ -71,10 +83,17 @@ public:
     // add the vertex s to the graph, if it's not already there
 	bool addVertex(const string& s);
 
+    // removes teh vertex s, and all it's edges
+    void removeVertex(const string& s);
+
     // add an edge between the two given vertices, weight and direction
     // could be specified as well
 	void addEdge(const string& from, const string& to,
 				 int w = 1, bool directed = false);
+
+    // remove the edge (from, to)
+    void removeEdge(const string& from, const string& to,
+                    bool directed = false);
 
 	// Breadth First Search
 	list<string> BFS(const string& s, const string& t);
@@ -83,7 +102,11 @@ public:
 	list<string> Dijkstra(const string& s, const string& t);
 
 	// Trajans Strong Connected Components
-	vector<list<string>> SCC();
+	vector<vector<string>> SCC();
+
+    // rank vertices based on many desired properties
+    map<string, int> rankByOutEdges();
+    map<string, int> rankByInEdges();
 };
 
 #endif
