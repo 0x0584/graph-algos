@@ -34,13 +34,12 @@ clean:
 
 re: clean all
 
-check:
-	@ls -lR
+check: all
 	@echo
-	@make re
+	@ls -lR
 	@echo
 	@cat tinyG.txt
 	@echo
 	@./$(NAME) tinyG.txt
 
-.PHONY: all re clean $(NAME)
+.PHONY: all check re clean $(NAME)

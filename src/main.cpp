@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:26:34 by archid-           #+#    #+#             //
-//   Updated: 2020/03/25 00:05:51 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/25 12:49:57 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -50,6 +50,14 @@ void testBFS(const char *file) {
 	for (auto itr = l.begin(); itr != l.end(); itr++)
 		cout << *itr << " ";
 	cout << endl << endl;
+
+    cout << "Initial Graph" << endl;
+    g.dumpGraph();
+    g.BFS(p.first, [](string& s, int li) {
+                       return s += "[" + to_string(li) + "]";
+                   });
+    cout << "After Layered BFS Travering" << endl;
+    g.dumpGraph();
 }
 
 void testSCC(const char *file) {

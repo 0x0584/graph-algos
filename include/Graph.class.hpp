@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:48:27 by archid-           #+#    #+#             //
-//   Updated: 2020/03/25 11:09:00 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/25 21:34:50 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -37,8 +37,8 @@ class Graph
 	{
 		T self;                         // vertex's identity
 
-		vector<pair<W, Vertex *>> adj;  // out-going edges
-		vector<pair<W, Vertex *>> radj; // in-coming edges
+		set<pair<W, Vertex *>> adj;  // out-going edges
+		set<pair<W, Vertex *>> radj; // in-coming edges
 
 		Vertex(T v) : self(v) {}
 	};
@@ -48,11 +48,14 @@ class Graph
         int id, low_id;
 
         Link() : id(0), low_id(0) {}
-        Link(Link& l) : id(l.id), low_id(l.id) {l.id++;}
 
-        Link& operator= (const Link& l) {
-            id = low_id = l.id;
+        Link& operator= (Link& l) {
+            id = low_id = l.id++;
             return *this;
+        }
+
+        void setLow(Link &l) {
+            low_id = min(low_id, l.low_id);
         }
     };
 
@@ -112,6 +115,9 @@ public:
 
 	// Breadth First Search
 	list<T> BFS(const T& s, const T& t);
+
+    // Apply fn on all vertices starting at vertex s
+    void BFS(T& s, T (*fn)(T& e, int layer));
 
 	// Dijkstra Shortest Path
 	list<T> Dijkstra(const T& s, const T& t);
