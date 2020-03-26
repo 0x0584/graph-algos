@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:26:34 by archid-           #+#    #+#             //
-//   Updated: 2020/03/25 12:49:57 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/27 14:05:09 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -32,7 +32,7 @@ void fillGraph(sample_graph& g, const char *file,
 		s.erase(0, s.find(" ") + 1);
 		v = string(s.substr(0, s.find(" ")));
 		s.erase(0, s.find(" ") + 1);
-		w = string(s.substr(0, s.find(" ")));
+        w = string(s.substr(0, s.find(" ")));
 		g.addEdge(u, v, weighted ? stoi(w) : 1 , directed);
 	}
 }
@@ -129,6 +129,18 @@ void testEdgeVertexManips(const char *file) {
     g.dumpGraph();
 }
 
+void testPageRank(const char *file) {
+    sample_graph g;
+
+    fillGraph(g, file, true); g.dumpGraph();
+
+    auto s = g.pageRank();
+
+    cout << " >> ranks" << endl;
+    for (auto e : s)
+        cout << e.second << " " << e.first << endl;
+}
+
 int main(int argc, char *argv[])
 {
 	if (argc == 1)
@@ -139,6 +151,7 @@ int main(int argc, char *argv[])
 	testDijkstra(argv[1]);
 	testEdgeRank(argv[1]);
     testEdgeVertexManips(argv[1]);
+    testPageRank(argv[1]);
 
 	return 0;
 }

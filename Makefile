@@ -6,7 +6,7 @@
 #    By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/03/20 21:31:38 by archid-           #+#    #+#              #
-#    Updated: 2020/03/25 23:33:49 by archid-          ###   ########.fr        #
+#    Updated: 2020/03/27 14:19:14 by archid-          ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -20,16 +20,18 @@ CPPFLAGS	= -Wall -Wextra -g -Iinclude
 
 OBJDIR		= .obj
 SRCDIR		= src
+DEPSDIR		= include
 
 SRCS		= $(shell find $(SRCDIR) -name '*.cpp' -type f)
+DEPS		= $(shell find $(DEPSDIR) -name '*.hpp' -type f)
 OBJS		= $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) $(DEPS)
 	$(CC) $(CPPFLAGS) $^ -o $@
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(DEPS)
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) -c $< -o $@
 

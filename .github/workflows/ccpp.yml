@@ -21,5 +21,5 @@ jobs:
       run: make check
     - name: valgrind check
       run: |
-          sudo apt-get install valgrind cppcheck -y
+          sudo apt-get install valgrind cppcheck -y &> /dev/null
           make valg

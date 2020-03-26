@@ -1,0 +1,6 @@
+site-A site-B 1
+site-A site-C 1
+site-A site-D 1
+site-B site-A 1
+site-C site-A 1
+site-D site-A 1

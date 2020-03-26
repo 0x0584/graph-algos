@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:48:27 by archid-           #+#    #+#             //
-//   Updated: 2020/03/25 21:34:50 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/27 15:23:59 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -40,9 +40,29 @@ class Graph
 		set<pair<W, Vertex *>> adj;  // out-going edges
 		set<pair<W, Vertex *>> radj; // in-coming edges
 
-		Vertex(T v) : self(v) {}
+		Vertex(T v = 0) : self(v) {}
+
+        friend bool operator<(const Vertex& v, const Vertex& u) {
+            return v.self < u.self;
+        }
+        friend bool operator>(const Vertex& v, const Vertex& u) {
+            return v.self > u.self;
+        }
+        friend bool operator<=(const Vertex& v, const Vertex& u) {
+            return v.self <= u.self;
+        }
+        friend bool operator>=(const Vertex& v, const Vertex& u) {
+            return v.self >= u.self;
+        }
+        friend bool operator==(const Vertex& v, const Vertex& u) {
+            return v.self == u.self;
+        }
+        friend bool operator!=(const Vertex& v, const Vertex& u) {
+            return v.self != u.self;
+        }
 	};
 
+    // internal structure used to track connected components
     struct Link
     {
         int id, low_id;
@@ -54,8 +74,78 @@ class Graph
             return *this;
         }
 
-        void setLow(Link &l) {
+        void setLow(const Link &l) {
             low_id = min(low_id, l.low_id);
+        }
+    };
+
+    struct Rank
+    {
+        typedef map<Vertex *, Rank> RankMap;
+
+        static const double decay_rate; // rate of browsing all links
+        static const double epsilon;    // minimum variation of rank
+        static RankMap ranks;           // the ranks of all vertices
+        static bool unstable;   // false if ranks stoped varying
+        static int N;           // Number of vertices
+
+        double r_old;
+        double r_new;
+
+        Rank(int n = 1) : r_old(1.0 / n), r_new(0.0) {}
+
+        void update() {r_old = r_new; r_new = 0.0;}
+
+        void update(Vertex *u, double random_jump) {
+            r_new = random_jump + (1 - decay_rate) / N;
+
+            for (auto v : u->radj) {
+                double tmp = (decay_rate * ranks[v.second].r_old);
+                tmp /= v.second->adj.size();
+                cout << " cc >> " << v.second->self << " => " << tmp << endl;
+                r_new += tmp;
+            }
+
+            unstable &= (abs(r_new - r_old) < epsilon);
+            cout << r_old << "\t - \t" << r_new << "\t "
+                 << abs(r_new - r_old) << endl;
+
+        }
+
+        static double randomJumpFactor() {
+            double rj = 0.0;
+
+            for (auto pg : ranks)
+                if (pg.first->adj.size() == 0)
+                    rj += decay_rate * (pg.second.r_old / N);
+            return rj;
+        }
+
+        static void rankPages() {
+            double rj = randomJumpFactor();
+
+            for (auto pg = ranks.begin(); pg != ranks.end(); pg++) {
+                cout << "site: " << pg->first->self << endl;
+                pg->second.update(pg->first, rj);
+                getchar();
+            }
+
+        }
+
+        static void updateRanks() {
+            for (auto pg = ranks.begin(); pg != ranks.end(); pg++)
+                pg->second.update();
+            unstable ^= true;
+        }
+
+        static bool init(map<T, Vertex *> g) {
+            unstable = true;
+            if (!(N = g.size())) return false;
+            for (auto e : g) {
+                ranks[e.second] = {N};
+                cout << e.second->self << " " << ranks[e.second].r_old << endl;
+            }
+            return true;
         }
     };
 
@@ -74,9 +164,6 @@ class Graph
 	// internal protocol to trace back a path starting from the destination
 	// vertex up until the source vertex
 	list<T> construct_path(map<T, T>& parent, const T &s, const T &t);
-
-	// Sets the low link of u to the min low keys between itself and v
-	void set_link(map<T, Link>& links, Vertex *u, Vertex *v);
 
 	// a custom DFS to set the component's id, used by SCC to find the
 	// strongly connected components in the graph
