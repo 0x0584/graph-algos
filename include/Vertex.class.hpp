@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/27 15:33:28 by archid-           #+#    #+#             //
-//   Updated: 2020/03/27 15:42:18 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/27 17:39:04 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -17,34 +17,19 @@
 
 // this is an internal structure that to represent each vertex
 // it holds the vertex identity as well as its adjacent vertices
+//
+// NOTE: this structure is note intented to be used on its own
 template<class V, class W>
 struct Vertex
 {
-    V self;                         // vertex's identity
+    V self;                     // vertex's identity
 
-    std::set<std::pair<W, Vertex *>> adj;  // out-going edges
-    std::set<std::pair<W, Vertex *>> radj; // in-coming edges
+    // This is a representation of adjacency list for both out-going edges
+    // and in-coming edges, where adj stores edges from this to others, and
+    // radj store edges that have this in their adj
+    set<pair<W, Vertex *>> adj, radj;
 
     Vertex(V v = 0) : self(v) {}
-
-    friend bool operator<(const Vertex& v, const Vertex& u) {
-        return v.self < u.self;
-    }
-    friend bool operator>(const Vertex& v, const Vertex& u) {
-        return v.self > u.self;
-    }
-    friend bool operator<=(const Vertex& v, const Vertex& u) {
-        return v.self <= u.self;
-    }
-    friend bool operator>=(const Vertex& v, const Vertex& u) {
-        return v.self >= u.self;
-    }
-    friend bool operator==(const Vertex& v, const Vertex& u) {
-        return v.self == u.self;
-    }
-    friend bool operator!=(const Vertex& v, const Vertex& u) {
-        return v.self != u.self;
-    }
 };
 
-#endif /* VERTEX.CLASS_H */
+#endif

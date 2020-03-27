@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/27 15:38:22 by archid-           #+#    #+#             //
-//   Updated: 2020/03/27 15:46:37 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/27 17:39:38 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -24,6 +24,6 @@
 # include <algorithm>
 # include <set>
 
-using namespace std;
+using namespace std; // NOTE: not the best practice but it serves the job..
 
 #endif
