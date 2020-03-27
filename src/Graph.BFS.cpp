@@ -6,42 +6,42 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/25 13:09:26 by archid-           #+#    #+#             //
-//   Updated: 2020/03/26 15:28:01 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/27 16:09:11 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 #include "Graph.class.hpp"
 
-template<class T, class W>
-list<T> Graph<T, W>::BFS(const T& s, const T& t) {
-	map<T, T> parent;
-	queue<T> q;
+template<class V, class W>
+list<V> Graph<V, W>::BFS(const V& s, const V& t) {
+    map<V, V> parent;
+    queue<V> q;
 
-	if (g.find(s) == g.end())
-		return {};
-	q.push(s);
-	while (!q.empty() && q.front() != t)
-	{
-		for (auto nei: g[q.front()]->adj) {
-			// this plays the role of marking vertices as seen, since we
-			// only set the parent once, thus we can ignore vertices that
-			// already have a parent
-			if (parent.find(nei.second->self) != parent.end())
-				continue;
-			q.push(nei.second->self);
-			parent[nei.second->self] = q.front();
-		}
-		q.pop();
-	}
-	return construct_path(parent, s, t);
+    if (g.find(s) == g.end())
+        return {};
+    q.push(s);
+    while (!q.empty() && q.front() != t)
+    {
+        for (auto nei: g[q.front()]->adj) {
+            // this plays the role of marking vertices as seen, since we
+            // only set the parent once, thus we can ignore vertices that
+            // already have a parent
+            if (parent.find(nei.second->self) != parent.end())
+                continue;
+            q.push(nei.second->self);
+            parent[nei.second->self] = q.front();
+        }
+        q.pop();
+    }
+    return construct_path(parent, s, t);
 }
 
-template<class T, class W>
-void Graph<T, W>::BFS(T& s, T (*callback)(T& e, int layer)) {
-    queue<pair<Vertex *, int>> call_q; // modification callback queue
-    queue<T> q;                        // traversing vertices queue
+template<class V, class W>
+void Graph<V, W>::BFS(V& s, V (*callback)(V& e, int layer)) {
+    queue<pair<Vertex<V, W> *, int>> call_q; // modification callback queue
+    queue<V> q;                        // traversing vertices queue
     deque<int> nei_q;                  // neighbors counting queue
-    set<T> v;                          // already visited vertices
+    set<V> v;                          // already visited vertices
     int layer = 0;                     // BFS layering
 
     q.push(s);

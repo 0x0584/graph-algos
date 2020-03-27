@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:26:34 by archid-           #+#    #+#             //
-//   Updated: 2020/03/27 14:05:09 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/27 16:21:02 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -95,12 +95,13 @@ void testEdgeRank(const char *file) {
     fillGraph(g, file, true, true);
 	auto out = g.rankByEdges(true);
 	auto in = g.rankByEdges(false);
-	auto vers = g.getVertices();
 
-	cout << "ranking vertices by # of in/out edges" << endl;
-	for (auto e : vers)
-		cout << setw(3) << e << " has in: " << in[e]
-			 << " out: " << out[e] << endl;
+	cout << "ranking vertices by # of in edges" << endl;
+    for (auto e : in) cout << e.second << " " << e.first << endl;
+
+	cout << "ranking vertices by # of out edges" << endl;
+    for (auto e : out) cout << e.second << " " << e.first << endl;
+
 	cout << endl;
 }
 
