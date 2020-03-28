@@ -2,21 +2,22 @@
 
 \usepackage[margin=0.90in]{geometry}
 
-\title{Solution of the Graph Algrithms Assignment}
+\title{Graph Algrithms}
 \author{Anas Rchid}
 \date{March 20, 2020}
+
 \begin{document}
 \maketitle
 
 \section*{Abstract}
 
-This is a solution to a graph algorithms assignment, it has three problems with two objectives. The problems are common in graph theory in general, being \textit{strongly connected components}, \textit{path finding} and \textit{vertices ranking}. Solving those problems by a mere implementation is not enough, thus the existance of this paper. It aims to explain some theoretical details about the implementations and the reason behind some decisions.
+This is a solution to a graph algorithms assignment, it has three problems with two objectives. The problems are common in graph theory in general, being \textit{strongly connected components}, \textit{path finding} and \textit{vertices ranking}. Solving those problems by a mere implementation is not enough, thus the existence of this paper. It aims to explain some theoretical details about the implementations and the reason behind some decisions.
 
 \section{Graphs and Graph Algorithms}
 
 A graph $G(V,E)$ is a pair of sets $V$ and $E$, being the set of vertices and the set edges, respectively. Each edge has links two vertices such that one is a source and the other is a destination.
 
-There are many graph algorithms, and depending on the type of the graph, some might be applicatble, others are not.  Generally, graphs have two distinct properties, namely \textit{edge direction} and \textit{edge weight}. Thus we have four possibilies:
+There are many graph algorithms, and depending on the type of the graph, some might be applicable, others are not.  Generally, graphs have two distinct properties, namely \textit{edge direction} and \textit{edge weight}. Thus we have four possibilities:
 
 \begin{itemize}
 \item being undirected and either unweighted or weighted
@@ -25,13 +26,13 @@ There are many graph algorithms, and depending on the type of the graph, some mi
 
 \section{Path Finding}
 
-A path is a list of vertices that are connect successively via edges, and lead from a source vertex \textit{s} to a destination vertex \textit{t}. More specifically, a \textit{shortest path} is a path which has the \textit{minimal cost}, there could be multiple shortest paths in the same graph, but by definition all of them must have the same cost. That cost could be either in terms of \textit{number of edges} for an unweighted graph, or the \textit{sum of weightes} for a weighted graph.
+A path is a list of vertices that are connect successively via edges, and lead from a source vertex \textit{s} to a destination vertex \textit{t}. More specifically, a \textit{shortest path} is a path which has the \textit{minimal cost}, there could be multiple shortest paths in the same graph, but by definition all of them must have the same cost. That cost could be either in terms of \textit{number of edges} for an unweighted graph, or the \textit{sum of weights} for a weighted graph.
 
 \subsection{Breath First Search}
 
 Along with Depth First Search, Breath First Search is a fundamental graph traversal algorithm. Both resemble different approaches of how to traverse a given graph. BFS, works only on \textit{unweighted} graphs, and this is actually not a bad thing, matter of fact, BFS is a sub-routine in other more sophisticated algorithms.
 
-BFS travese the graph is a \textit{layered} fashion, meaning that each time we move through the whole graph level by level, starting at a given vertex, and making our way thourgh, until we visit all other reachable vertices.
+BFS traverse the graph is a \textit{layered} fashion, meaning that each time we move through the whole graph level by level, starting at a given vertex, and making our way through, until we visit all other reachable vertices.
 
 \paragraph{Algorithm details} Given a graph $G(V,E)$, a vertex $s \in G$ and a queue $Q$. We start by enqueuing the $s$ and mark it as visited, so that we can ignore it later if we reached it from another path. Then while $Q$ is not empty, we enqueue all destination vertices of $s$, after marking them too as visited.
 
@@ -41,7 +42,7 @@ Repeating this process with each vertex in $Q$ ensure that we'll traverse the wh
 
 \paragraph{Space Complexity} The queue used to track which vertices to visit next consume a space complexity of $O(V)$ at the worst case, since we might store all vertices in the queue at once.
 
-\paragraph{Applications} As mentioned above, BFS finds the shortest path within  an unweighted graph, in terms of number of edges. Also, it is a sub-routine in FordFulkerson Method to find the maximum flow in a given graph. And due to its nature, BFS makes it also perfect as well for finding near neighbors\footnote{Since we traverse the graph layer at a time, and in all directions}, which is really useful to know about networks and navigations systems, rather than using it to find whether a graph is Bipartite\footnote{A graph that it's vertices set could be splited into two sets, such that there is no edge connecting two vertices in the same set} or not.
+\paragraph{Applications} As mentioned above, BFS finds the shortest path within  an unweighted graph, in terms of number of edges. Also, it is a sub-routine in Ford Fulkerson Method to find the maximum flow in a given graph. And due to its nature, BFS makes it also perfect as well for finding near neighbors\footnote{Since we traverse the graph layer at a time, and in all directions}, which is really useful to know about networks and navigation's systems, rather than using it to find whether a graph is Bipartite\footnote{A graph that it's vertices set could be splited into two sets, such that there is no edge connecting two vertices in the same set} or not.
 
 \subsection{Dijkstra's Algorithm}
 
@@ -53,32 +54,53 @@ The main idea of Dijkstra is to be as greedy as possible, by always taking the m
 
 Beforehand, we set the distance of $s$ to $0$, and enqueue it to $pq$. Then, while $pq$ still has entries, we poll a pair, namely $e$. Then for all the $n_i$ neighbors of $e.v$, let $c$ be as the total distance between $s$ and $n_i$ i.e., the stored distance $d[e.v]$ + $n_i$'s edge weight. If $n_i$ hasn't been reached already, then we enqueue the pair $(n_i,c)$ into $pq$. Otherwise, we only enqueue the pair $(n_i,c)$ \textit{iff} $c < d[n_i]$. If so, we update the distance $d[n_i]$ since we've found a better one.
 
-Obviously, this approach might result having some outdated distances of the same vertex, but we can simply ignore those in case we have already a better distance, indeed  $d[e.v] < e.c$.
+Obviously, this approach might result having some outdated distances of the same vertex, but we can simply ignore those in case we have already a better distance, indeed $d[e.v] < e.c$.
 
 The algorithm guarantees that we'll compute the minimum distance between each pair of vertices in $G$ once it terminates. We can stop early if a destination vertex is given, since it's distance would not change once reached even we can still discover another vertices.
 
-\paragraph{Time Complexity}
+\paragraph{Time Complexity} Although Dijkstra's algorithm specify how to pick vertices based, but it does not specify how to actually pick them --- that data structure to use. It just specifies that we need to pick the next most promising edge. Thus, the main factor determining \textit{the complexity of Dijkstra's algorithm depend on the data structure used to prioritize vertices}.
 
-the main factor determining the complexity of the Dijkstra algorithm, is the data structre we use to set prioritize vertices.
+However, and independently from what data structure is used, we still have to traverse $O(V)$ vertices which is implicitly $O(V)$ queries to get the next promising vertex, as well as performing $O(E)$ updates\footnote{Updates include insertions, since we assume that initially all vertices a cost of $\infty$.} in the worst case resulting $O(nE + mV)$ where $n$ is the cost for updating an entry and $m$ is the cost of retrieving an entry. Below are three different approaches that have different complexities relative to their data structures.
 
-\subparagraph{Using Standard Priority Queues}
-$O(V^2)$ using a standard priority queue,
+\subparagraph{Unsorted Arrays --- $O(E + V^2)$} Originally, Dijkstra's algorithm was implemented using unsorted arrays, which is extremely inefficient since we can update vertices in $O(1)$, but finding the promising vertex would take $O(V)$ since we have move through the entire array to find the promising vertex\footnote{And we cannot maintain a sorted array since we'll have to sort in $O(V\log(V))$ and perform a binary search $O(\log(V))$, thus a linear search is better.}.
 
-\subparagraph{Using Indexed Priority Queues} The act of keep pushing new minimum distances is a lazy approach, since it create duplicates that we can easily ignore by comparing the stored distances, but the in spare graphs, this would result some unnecessary work.
+Thus, the wholesome time complexity is $O(E) + O(V^2) = O(E + V^2)$, however for spare graphs, it's safe to assume that $|E| < |V|^2$, thus we can ignore the cost of updates relative to the lookup cost resulting a complexity of $O(V^2)$.
 
-An Alternative solution would be to set the key of $n_i$ into $c$ instead, this is done in an indexed priority queue implemented using a MinHeap, which allows to decrease a key, resulting an overall complexity $O((V+E)\log(V))$
+\subparagraph{Priority Queues --- $O(E\log(V) + V\log(V))$} One improvment to make is to replace the linear with some constant time operation, since we always want to pick the next most promising vertex --- the one with the minimum cost, we can use a priority queue, generally implemented as binary heaps. We can now get the next vertex in $O(1)$, however this is a bit misleading since re-balancing\footnote{A binary heap needs to be heapify-ed after each get or insert, in order to reestablish the order or place the element in the correct place, respectively.} the priority queue after dequeuing an entry would cost $O(\log(V))$. The same goes when enqueuing an entry.
 
-\subparagraph{Using Fibonacci Heaps}
+However, for Dijkstra's algorithm since we have to constently update the cost of vertices, and most standard priority queue implementations does not support a critical operation to acheive such a goal optimally --- \texttt{decreaseKey(e, k)}. Luckily, we can get around this issue by following a \textit{lazy} approach, where each time we find a better entry (a one with a less cost for the same vertex), we enqueue it. It's clear that enqueuing new entries result duplicates\footnote{It's better to enqueue new entries in $O(\log(n))$ then to look up for them in $O(n)$}, although we can easily ignore those outdated costs by comparing the stored distances and move forward only for the least ones, but in dense graphs, this would result a lot of \textit{unnecessary work}.
+
+Thus, the wholesome complexity is $O(E\log(V)) + O(V\log(V)) = O((E + V)\log(V))$. However, it's generally safe to assume that $|V| < |E|$, thus we get a $O(E\log(V))$ time complexity.
+
+\begin{quotation}
+  A neat optimization to get ride of the duplicates caused by the lazy approach, is by instead maintaining an ordered set $A$ of pairs $(v, c)$ --- a vertex $v$ with its minimum distance $c$ that's been found so far. Since $A$ is ordered (by cost $c$ obviously), we can assure that the first element is the most promising. However, when a better cost found for the same vertex, we shall remove the previous cost.
+\end{quotation}
+
+
+\subparagraph{Fibonacci Heaps}
 
 $O(E + V\log(V))$
+
 \paragraph{Space Complexity}
+
 \paragraph{Applications}
 
 \subsection{Constructing a path}
 
 \section{Strongly Connected Components}
-\subsection{Tarkan's Algorithm}
+\subsection{Tarjan's Algorithm}
+\paragraph{Algorithm Details}
+\paragraph{Time Complexity}
+\paragraph{Space Complexity}
+\paragraph{Applications}
 
 \section{Ranking}
+\subsection{Ranking based on edge degrees}
+
+\subsection{Google's PageRank}
+\paragraph{Algorithm Details}
+\paragraph{Time Complexity}
+\paragraph{Space Complexity}
+\paragraph{Applications}
 
 \end{document}

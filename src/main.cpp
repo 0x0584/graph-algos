@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:26:34 by archid-           #+#    #+#             //
-//   Updated: 2020/03/27 16:21:02 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/28 05:00:34 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -28,6 +28,7 @@ void fillGraph(sample_graph& g, const char *file,
 	while (in && getline(in, s)) {
 		string u, v, w;
 
+        if (s[0] == '#') continue;
 		u = string(s.substr(0, s.find(" ")));
 		s.erase(0, s.find(" ") + 1);
 		v = string(s.substr(0, s.find(" ")));
@@ -83,8 +84,8 @@ void testDijkstra(const char *file) {
 	auto l = g.Dijkstra(p.first, p.second);
 
 	cout << "Shortest Path between " << p.first << " and " << p.second
-		 << " using Dijkstra is: " << endl;
-	for (auto e: l)
+		 << " using Dijkstra is: cost = " << l.first << endl;
+	for (auto e: l.second)
 		cout << e << " ";
 	cout << endl << endl;
 }

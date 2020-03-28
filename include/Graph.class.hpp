@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:48:27 by archid-           #+#    #+#             //
-//   Updated: 2020/03/27 16:10:14 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/28 04:48:41 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -74,7 +74,7 @@ public:
     void BFS(V& s, V (*fn)(V& e, int layer));
 
     // Dijkstra Shortest Path
-    list<V> Dijkstra(const V& s, const V& t);
+    pair<W, list<V>> Dijkstra(const V& s, const V& t);
 
     // Trajans Strong Connected Components
     vector<vector<V>> SCC();
