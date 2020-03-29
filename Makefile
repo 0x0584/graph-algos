@@ -13,7 +13,7 @@
 DEBUG		?= 1
 
 NAME		= foo.out
-ARGS		= tinyG.txt
+ARGS		= negative.txt
 
 RUN			= ./$(NAME) $(ARGS)
 
@@ -58,7 +58,7 @@ check: all
 	@echo
 	@ls -lR
 	@echo
-	@cat tinyG.txt
+	@cat $(ARGS)
 	@echo
 	@$(RUN)
 
