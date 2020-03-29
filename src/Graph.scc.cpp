@@ -1,12 +1,12 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   Graph.SCC.cpp                                      :+:      :+:    :+:   //
+//   Graph.scc.cpp                                      :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/25 13:10:24 by archid-           #+#    #+#             //
-//   Updated: 2020/03/27 16:09:51 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/29 14:17:23 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -30,7 +30,7 @@ struct Link
 };
 
 template<class T, class W>
-void sccDFS(Vertex<T, W> *e, vector<vector<T>>& scc, vector<T>& v,
+void TrajanDFS(Vertex<T, W> *e, vector<vector<T>>& scc, vector<T>& v,
             Link& l, map<T, Link>& links) {
     // we push all vertices to the vector, so that we can tell which
     // vertices we're currently following
@@ -41,7 +41,7 @@ void sccDFS(Vertex<T, W> *e, vector<vector<T>>& scc, vector<T>& v,
     for (auto nei: e->adj) {
         // recursively keep visiting undiscovered vertices with DFS
         if (links.find(nei.second->self) == links.end())
-            sccDFS(nei.second, scc, v, l, links);
+            TrajanDFS(nei.second, scc, v, l, links);
         // on the callback, we set the lowest_id to be the min between
         // the neighbors lowest, and self's lowest.
         // this process happens recursively so that all the vertices
@@ -64,7 +64,7 @@ void sccDFS(Vertex<T, W> *e, vector<vector<T>>& scc, vector<T>& v,
     }
 }
 
-template<class T, class W> vector<vector<T>> Graph<T, W>::SCC() {
+template<class T, class W> vector<vector<T>> Graph<T, W>::Trajan() {
     map<T, Link> links; // a pair of <id, lowest_id>
     vector<T> visiting;
     vector<vector<T>> scc;
@@ -74,8 +74,12 @@ template<class T, class W> vector<vector<T>> Graph<T, W>::SCC() {
         // each time we start at a different node, but only if it's
         // not a part of an already found connected component
         if (links.find(itr->first) == links.end())
-            sccDFS(itr->second, scc, visiting, lnk, links);
+            TrajanDFS(itr->second, scc, visiting, lnk, links);
     return scc;
+}
+
+template<class T, class W> vector<vector<T>> Graph<T, W>::Kosaraju() {
+
 }
 
 template class Graph<int, int>;

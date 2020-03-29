@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:26:34 by archid-           #+#    #+#             //
-//   Updated: 2020/03/28 05:00:34 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/29 21:55:35 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -65,7 +65,7 @@ void testSCC(const char *file) {
     sample_graph g;
 
     fillGraph(g, file, true);
-	auto l = g.SCC();
+	auto l = g.Trajan();
 
 	cout << "Number of Connected Components: " << l.size() << endl;
 	for (auto iter = l.begin(); iter != l.end(); iter++) {
@@ -85,6 +85,23 @@ void testDijkstra(const char *file) {
 
 	cout << "Shortest Path between " << p.first << " and " << p.second
 		 << " using Dijkstra is: cost = " << l.first << endl;
+	for (auto e: l.second)
+		cout << e << " ";
+	cout << endl << endl;
+}
+
+void testBellmanFord(const char *file) {
+    sample_graph g;
+    bool has_negative_cycle;
+
+    fillGraph(g, file, true, true);
+	auto p = g.getSampleVertexPair();
+	auto l = g.BellmanFord(p.first, p.second, &has_negative_cycle);
+
+	cout << "Shortest Path between " << p.first << " and " << p.second
+		 << " using BellmanFord is: cost = " << l.first << endl;
+    cout << (has_negative_cycle ? "has cycle" : "doesn't contain a cycle")
+         << endl;
 	for (auto e: l.second)
 		cout << e << " ";
 	cout << endl << endl;
@@ -148,12 +165,13 @@ int main(int argc, char *argv[])
 	if (argc == 1)
 		exit(-1);
 
-	testBFS(argv[1]);
-	testSCC(argv[1]);
-	testDijkstra(argv[1]);
-	testEdgeRank(argv[1]);
-    testEdgeVertexManips(argv[1]);
-    testPageRank(argv[1]);
+	// testBFS(argv[1]);
+	// testSCC(argv[1]);
+	// testDijkstra(argv[1]);
+	testBellmanFord(argv[1]);
+	// testEdgeRank(argv[1]);
+    // testEdgeVertexManips(argv[1]);
+    // testPageRank(argv[1]);
 
 	return 0;
 }

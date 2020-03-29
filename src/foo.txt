@@ -1,0 +1,7 @@
+complex
+
+site-A 0.181413
+site-D 0.178126
+site-B 0.107104
+site-C 0.0755214
+site-E 0.03

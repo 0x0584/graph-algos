@@ -1,12 +1,12 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   Graph.BFS.cpp                                      :+:      :+:    :+:   //
+//   Graph.traverse.cpp                                 :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/25 13:09:26 by archid-           #+#    #+#             //
-//   Updated: 2020/03/27 16:09:11 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/29 14:10:33 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -72,6 +72,10 @@ void Graph<V, W>::BFS(V& s, V (*callback)(V& e, int layer)) {
         g.erase(e.first->self);
         g[callback(e.first->self, e.second)] = e.first;
     }
+}
+
+template<class V, class W> void Graph<V, W>::DFS(V& s, V (*fn)(V& e)) {
+
 }
 
 template class Graph<int, int>;

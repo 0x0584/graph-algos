@@ -6,7 +6,7 @@
 //   By: archid- <archid-@student.1337.ma>          +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2020/03/16 00:48:27 by archid-           #+#    #+#             //
-//   Updated: 2020/03/28 04:48:41 by archid-          ###   ########.fr       //
+//   Updated: 2020/03/29 22:53:20 by archid-          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -70,14 +70,26 @@ public:
     // Breadth First Search
     list<V> BFS(const V& s, const V& t);
 
-    // Apply fn on all vertices starting at vertex s
+    // run BFS and apply fn on all vertices starting at vertex s
     void BFS(V& s, V (*fn)(V& e, int layer));
+
+    // run DFS and apply fn on all vertices starting at vertex s
+    void DFS(V& s, V (*fn)(V& e));
+
+    // Bellman-Ford Shortest Path algorithm
+    pair<W, list<V>> BellmanFord(const V& s, const V& t, bool *cycle);
 
     // Dijkstra Shortest Path
     pair<W, list<V>> Dijkstra(const V& s, const V& t);
 
+    // Floyd–Warshall algorith
+    pair<W, list<V>> FloydWarshall(const V& s, const V& t);
+
     // Trajans Strong Connected Components
-    vector<vector<V>> SCC();
+    vector<vector<V>> Trajan();
+
+    // Kosaraju's Strong Connected Components
+    vector<vector<V>> Kosaraju();
 
     // rank vertices based on many desired properties
     set<pair<double, V>, greater<pair<double, V>>> rankByEdges(bool out = true);
