@@ -36,7 +36,7 @@ OBJS		= $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(DEPS)
+$(NAME): $(OBJS)
 	$(CC) $(CPPFLAGS) $^ -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(DEPS)
