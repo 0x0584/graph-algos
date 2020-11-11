@@ -162,16 +162,16 @@ void testPageRank(const char *file) {
 
 int main(int argc, char *argv[])
 {
-	if (argc == 1)
-		exit(-1);
+    if (argc == 1)
+        exit(-1);
 
-	// testBFS(argv[1]);
-	// testSCC(argv[1]);
-	// testDijkstra(argv[1]);
-	testBellmanFord(argv[1]);
-	// testEdgeRank(argv[1]);
-    // testEdgeVertexManips(argv[1]);
-    // testPageRank(argv[1]);
+    testBFS(argv[1]);
+    testSCC(argv[1]);
+    testDijkstra(argv[1]);
+    testBellmanFord(argv[1]);
+    testEdgeRank(argv[1]);
+    testEdgeVertexManips(argv[1]);
+    testPageRank(argv[1]);
 
-	return 0;
+    return 0;
 }
