@@ -13,7 +13,7 @@
 DEBUG		?= 1
 
 NAME		= foo.out
-ARGS		= negative.txt
+ARGS		= tinyG.txt
 
 RUN			= ./$(NAME) $(ARGS)
 
